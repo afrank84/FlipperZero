@@ -1,3 +1,3 @@
 # FlipperZero
 Cool stuff
-![Logo](path/to/image.png)
+![Logo](flipperzerologo.png)
