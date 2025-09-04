@@ -1,0 +1,31 @@
+REM ======================================================
+REM  Linux Quick System Report (Safe / Helpful Payload)
+REM  Creates a text report with system info on Desktop,
+REM  then opens it in the default text editor.
+REM  Works best on Ubuntu/Pop!_OS (GNOME, CTRL+ALT+T opens Terminal)
+REM ======================================================
+
+DEFAULT_DELAY 0         REM No global delay between commands
+DEFAULT_CHAR_DELAY 2    REM Each character typed with 2 ms spacing
+
+DELAY 1000              REM Wait 1 second after plugging in (system settles)
+
+CTRL ALT t              REM Open a new terminal (GNOME default shortcut)
+DELAY 700               REM Small pause for terminal window to appear
+
+REM Build a filename in ~/Desktop with timestamp
+REM "sys_YYYY-MM-DD_HH-MM-SS.txt"
+REM Redirect output of all following commands into this file
+STRING FILE=~/Desktop/sys_$(date +%F_%H-%M-%S).txt; \ 
+  (echo "=== System Report $(date) ==="; \
+  uname -a; \                        REM Kernel + OS version
+  uptime -p; \                        REM Human-friendly uptime
+  df -h; \                            REM Disk usage by mount
+  free -h; \                          REM Memory usage
+  lsblk -o NAME,SIZE,TYPE,MOUNTPOINTS; \ REM Block devices + mounts
+  ip -brief addr; \                   REM Network interfaces + IPs
+  ip route) > "$FILE"; \              REM Default routing table
+  xdg-open "$FILE" 2>/dev/null || \   REM Try to open report in default editor
+  gio open "$FILE" 2>/dev/null || \   REM GNOME fallback
+  xdg-open .                          REM As a last resort, open Desktop folder
+ENTER
